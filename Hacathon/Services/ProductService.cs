@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Hacathon.Models;
 using Hacathon.Repositories;
@@ -19,18 +18,14 @@ namespace Hacathon.Services
         {
             var products = _productRepository.GetProducts();
 
-            if (!string.IsNullOrEmpty(request?.CountryCode))
-            {
-                products = products.Where(x => String.Equals(x.ShippingCountryCode, request.CountryCode, StringComparison.CurrentCultureIgnoreCase))
-                    .ToList();
-            }
-            if (!string.IsNullOrEmpty(request?.Gender))
-            {
-                products = products.Where(x => String.Equals(x.ProductGender, request.Gender, StringComparison.CurrentCultureIgnoreCase))
-                    .ToList();
-            }
+            return products.Where(x => CompareProduct(x, request)).OrderBy(x => x.InCountryRanking);
+        }
 
-            return products.OrderBy(x => x.InCountryRanking);
+        private static bool CompareProduct(Product product, RequestModel request)
+        {
+            if (!string.IsNullOrEmpty(request?.CountryCode) &&
+                product.ShippingCountryCode != request.CountryCode) return false;
+            return string.IsNullOrEmpty(request?.Gender) || product.ProductGender == request.Gender;
         }
     }
 }
