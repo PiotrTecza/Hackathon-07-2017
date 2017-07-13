@@ -30,7 +30,7 @@ namespace Hacathon.Services
                     .ToList();
             }
 
-            return products;
+            return products.OrderBy(x => x.InCountryRanking);
         }
     }
 }
